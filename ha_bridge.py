@@ -48,7 +48,7 @@ def sync_hp_to_mqtt(hp: HtHeatpump, mqtt_client: mqtt.Client, sensors):
                 print(f"Could not read {ht_id}")
 
             mqtt_id = f"home/heatpump/{mqtt_id}"
-            # mqtt_client.publish(mqtt_id, value)
+            mqtt_client.publish(mqtt_id, value)
 
     finally:
         hp.logout()  # try to logout for an ordinary cancellation (if possible)
