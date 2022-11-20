@@ -1,5 +1,5 @@
+import argparse
 from time import sleep
-from typing import Any
 from htheatpump import HtHeatpump
 import paho.mqtt.client as mqtt
 
@@ -16,7 +16,6 @@ sensor_dict = {
 # ARGS
 #
 parser = argparse.ArgumentParser(description='Integrate your heatpump into HomeAssistant.')
-parser.add_argument('--log_console', required=False, help='Loag all energy values to console.')
 parser.add_argument('--serial_port', default="/dev/ttyUSB0", help='Port of rapspberry connected to your heatpump.')
 parser.add_argument('--baud_rate', default=19200, help='Baudrate of serial port.')
 parser.add_argument('--mqtt_server', default="localhost", help='MQTT server host.')
