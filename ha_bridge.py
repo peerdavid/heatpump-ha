@@ -65,7 +65,7 @@ def get_all_sensors(path):
             mp_sp = row.split(",")[1].lower()
             mqtt_id = f"{mp_sp}_{sensor}"
 
-            sensors.append(ht_id, mqtt_id)
+            sensors.append((ht_id, mqtt_id))
 
     return sensors
 
