@@ -1,25 +1,11 @@
+import os
 import argparse
 from time import sleep
 from htheatpump import HtHeatpump
 import paho.mqtt.client as mqtt
+from pathlib import Path
 
-#
-# Params to read
-#
-sensor_dict = {
-    "home/heatpump/temp_aussen": "Temp. Aussen",
-    "home/heatpump/temp_brauchwasser": "Temp. Brauchwasser",
-    "home/heatpump/temp_ruecklauf": "Temp. Ruecklauf",
-    "home/heatpump/temp_vorlauf": "Temp. Vorlauf",
-
-    "home/heatpump/temp_pufferspeicher": "Temp. Pufferspeicher",
-    # "home/heatpump/aussen": "Temp. Aussen",
-    # "home/heatpump/aussen": "Temp. Aussen",
-    # "home/heatpump/aussen": "Temp. Aussen",
-    # "home/heatpump/aussen": "Temp. Aussen",
-
-}
-
+current_path = Path(__file__).parent.absolute()
 
 
 #
@@ -50,14 +36,20 @@ def create_mqtt_client() -> mqtt.Client:
     return mqtt_client
 
 
-def sync_hp_to_mqtt(hp: HtHeatpump, mqtt_client: mqtt.Client):
+def sync_hp_to_mqtt(hp: HtHeatpump, mqtt_client: mqtt.Client, sensors):
     try:
         hp.open_connection()
         hp.login()
-        for mqtt_id, ht_id in sensor_dict.items():
+        for ht_id in sensors:
             print(f"Reading value {ht_id}.")
-            value = hp.get_param(ht_id)
-            print(f"  Value = {value}.")
+
+            try:
+                value = hp.get_param(ht_id)
+                print(f"  Value = {value}.")
+            except:
+                print(f"Could not read {ht_id}")
+
+            mqtt_id = f"home/heatpump/{ht_id}"
             # mqtt_client.publish(mqtt_id, value)
 
     finally:
@@ -65,15 +57,25 @@ def sync_hp_to_mqtt(hp: HtHeatpump, mqtt_client: mqtt.Client):
         hp.close_connection()
 
 
+def get_all_sensors(path):
+    sensors = []
+    file_path = os.path.join(path, "sensors.csv")
+    with open(file_path, "r") as fp:
+        for row in fp:
+            sensor = row.split(",")[0]
+            sensors.append(sensor)
+    return sensors
+
 #
 # M A I N
 #
 def main():
     hp_client = create_heatpump_client()
     mqtt_client = create_mqtt_client()
+    sensors = get_all_sensors(current_path)
 
     while(True):
-        sync_hp_to_mqtt(hp_client, mqtt_client)
+        sync_hp_to_mqtt(hp_client, mqtt_client, sensors)
         sleep(60)
 
 if __name__ == "__main__":
