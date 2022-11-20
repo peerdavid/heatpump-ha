@@ -41,11 +41,9 @@ def sync_hp_to_mqtt(hp: HtHeatpump, mqtt_client: mqtt.Client, sensors):
         hp.open_connection()
         hp.login()
         for ht_id, mqtt_id in sensors:
-            print(f"Reading value {ht_id}.")
-
             try:
                 value = hp.get_param(ht_id)
-                print(f"  Value = {value}.")
+                print(f"{mqtt_id} = {value}.")
             except:
                 print(f"Could not read {ht_id}")
 
