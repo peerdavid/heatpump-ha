@@ -7,7 +7,17 @@ import paho.mqtt.client as mqtt
 # Params to read
 #
 sensor_dict = {
-    "home/heatpump/ruecklauf": "Temp. Ruecklauf"
+    "home/heatpump/temp_aussen": "Temp. Aussen",
+    "home/heatpump/temp_brauchwasser": "Temp. Brauchwasser",
+    "home/heatpump/temp_ruecklauf": "Temp. Ruecklauf",
+    "home/heatpump/temp_vorlauf": "Temp. Vorlauf",
+
+    "home/heatpump/temp_pufferspeicher": "Temp. Pufferspeicher",
+    # "home/heatpump/aussen": "Temp. Aussen",
+    # "home/heatpump/aussen": "Temp. Aussen",
+    # "home/heatpump/aussen": "Temp. Aussen",
+    # "home/heatpump/aussen": "Temp. Aussen",
+
 }
 
 
@@ -45,9 +55,10 @@ def sync_hp_to_mqtt(hp: HtHeatpump, mqtt_client: mqtt.Client):
         hp.open_connection()
         hp.login()
         for mqtt_id, ht_id in sensor_dict.items():
-            print("Sending value {ht_id} to {mqtt_id}.")
+            print(f"Reading value {ht_id}.")
             value = hp.get_param(ht_id)
-            mqtt_client.publish(mqtt_id, value)
+            print(f"  Value = {value}.")
+            # mqtt_client.publish(mqtt_id, value)
 
     finally:
         hp.logout()  # try to logout for an ordinary cancellation (if possible)
