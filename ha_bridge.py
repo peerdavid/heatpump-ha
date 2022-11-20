@@ -79,8 +79,12 @@ def main():
 
 
     while(True):
-        sync_hp_to_mqtt(hp_client, mqtt_client, sensors)
-        sleep(60)
+        try:
+            sync_hp_to_mqtt(hp_client, mqtt_client, sensors)
+            sleep(60)
+        except:
+            print("Failed to sync heatpump with MQTT.")
+            sleep(60)
 
 if __name__ == "__main__":
     main()
