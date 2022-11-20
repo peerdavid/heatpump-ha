@@ -77,7 +77,6 @@ def main():
     hp_client = create_heatpump_client()
     mqtt_client = create_mqtt_client()
 
-
     while(True):
         try:
             sync_hp_to_mqtt(hp_client, mqtt_client, sensors)
