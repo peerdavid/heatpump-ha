@@ -40,7 +40,7 @@ def sync_hp_to_mqtt(hp: HtHeatpump, mqtt_client: mqtt.Client, sensors):
     try:
         hp.open_connection()
         hp.login()
-        for ht_id in sensors:
+        for ht_id, mqtt_id in sensors:
             print(f"Reading value {ht_id}.")
 
             try:
@@ -49,7 +49,7 @@ def sync_hp_to_mqtt(hp: HtHeatpump, mqtt_client: mqtt.Client, sensors):
             except:
                 print(f"Could not read {ht_id}")
 
-            mqtt_id = f"home/heatpump/{ht_id}"
+            mqtt_id = f"home/heatpump/{mqtt_id}"
             # mqtt_client.publish(mqtt_id, value)
 
     finally:
@@ -62,17 +62,23 @@ def get_all_sensors(path):
     file_path = os.path.join(path, "sensors.csv")
     with open(file_path, "r") as fp:
         for row in fp:
-            sensor = row.split(",")[0]
-            sensors.append(sensor)
+            ht_id = row.split(",")[0]
+            sensor = row.split(",")[0].lower().replace(" (", "(").replace("(", "").replace(")", "").replace(" ", "_").replace(".", "")
+            mp_sp = row.split(",")[1].lower()
+            mqtt_id = f"{mp_sp}_{sensor}"
+
+            sensors.append(ht_id, mqtt_id)
+
     return sensors
 
 #
 # M A I N
 #
 def main():
+    sensors = get_all_sensors(current_path)
     hp_client = create_heatpump_client()
     mqtt_client = create_mqtt_client()
-    sensors = get_all_sensors(current_path)
+
 
     while(True):
         sync_hp_to_mqtt(hp_client, mqtt_client, sensors)
