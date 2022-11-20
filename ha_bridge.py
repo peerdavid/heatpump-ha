@@ -44,8 +44,7 @@ def sync_hp_to_mqtt(hp: HtHeatpump, mqtt_client: mqtt.Client):
     try:
         hp.open_connection()
         hp.login()
-        hp = HtHeatpump(args.serial_port, baudrate=args.baud_rate)
-        for mqtt_id, ht_id in sensor_dict:
+        for mqtt_id, ht_id in sensor_dict.items():
             print("Sending value {ht_id} to {mqtt_id}.")
             value = hp.get_param(ht_id)
             mqtt_client.publish(mqtt_id, value)
