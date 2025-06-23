@@ -59,3 +59,6 @@ BSZ Verdichter akt. Laufzeit,SP,174,r-,INT,0,100000
 MKR2 Aktiviert,SP,222,r-,INT,0,2
 Energiezaehler,SP,263,r-,INT,0,2
 BSZ Verdichter Schaltung WW,SP,375,r-,INT,0,100000
+2. Stufe HKR Betrieb,SP,53,r-,INT,0,3
+2. Stufe WW Betriebs,SP,61,r-,INT,0,3
+2. Stufe WW Alternat,SP,68,r-,INT,-15,20
