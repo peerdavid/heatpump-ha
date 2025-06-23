@@ -100,7 +100,7 @@ def subscribe_electro_heat(mqtt_client: mqtt.Client):
 
     mqtt_client.on_message = on_message
 
-def set_pv(hp_client: HtHeatpump, mqtt_client: mqtt.Client):
+def set_pv(hp_client: HtHeatpump):
     # Read value with mqtt
     if pv_modus < 0:
         print("NO PV Modus received yet.")
@@ -122,6 +122,7 @@ def set_pv(hp_client: HtHeatpump, mqtt_client: mqtt.Client):
 # M A I N
 #
 def main():
+    print("Starting heatpump HA bridge...")
     sensors = get_all_sensors(current_path)
     hp_client = create_heatpump_client()
     mqtt_client = create_mqtt_client()
@@ -133,7 +134,7 @@ def main():
             hp_client.login()
 
             # sync_hp_to_mqtt(hp_client, mqtt_client, sensors)
-            set_pv(hp_client, mqtt_client)
+            set_pv(hp_client)
         except Exception as e:
             print(f"Failed to sync heatpump with MQTT: {e}")
         finally:
