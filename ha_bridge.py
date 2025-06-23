@@ -77,10 +77,12 @@ def subscribe_topics(mqtt_client: mqtt.Client):
             # Decode the message payload
             value = message.payload.decode('utf-8')
             if message.topic == "home/heatpump/pv/ww":
-                pv_ww = int(value)
+                pv_ww = float(value)
+                pv_ww = int(pv_ww)
                 print(f"Received message on {message.topic}: pv_ww = {pv_ww}")
             elif message.topic == "home/heatpump/pv/modus":
-                pv_modus = int(value)
+                pv_modus = float(value)
+                pv_modus = int(pv_modus)
                 print(f"Received message on {message.topic}: pv_modus = {pv_modus}")
         except ValueError:
             print(f"Invalid value received on {message.topic}: {message.payload.decode('utf-8')}")
