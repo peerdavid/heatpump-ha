@@ -101,6 +101,8 @@ def subscribe_pv_modus(mqtt_client: mqtt.Client):
     mqtt_client.on_message = on_message
 
 def set_pv(hp_client: HtHeatpump):
+    global pv_modus, pv_ww
+    
     # Read value with mqtt
     if pv_modus < 0:
         print("NO PV Modus received yet.")
