@@ -83,7 +83,7 @@ def subscribe_ww(mqtt_client: mqtt.Client):
 
     mqtt_client.on_message = on_message
 
-def subscribe_electro_heat(mqtt_client: mqtt.Client):
+def subscribe_pv_modus(mqtt_client: mqtt.Client):
     # Set the callback for incoming messages
     mqtt_id = "home/heatpump/pv/modus"
     mqtt_client.subscribe(mqtt_id)
@@ -126,7 +126,8 @@ def main():
     sensors = get_all_sensors(current_path)
     hp_client = create_heatpump_client()
     mqtt_client = create_mqtt_client()
-    subscribe_electro_heat(mqtt_client)
+    subscribe_pv_modus(mqtt_client)
+    subscribe_ww(mqtt_client)
 
     while(True):
         try:
