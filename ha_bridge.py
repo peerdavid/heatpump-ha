@@ -100,6 +100,7 @@ def main():
     sensors = get_all_sensors(current_path)
     hp_client = create_heatpump_client()
     mqtt_client = create_mqtt_client()
+    subscribe_electro_heat(mqtt_client)
 
     while(True):
         try:
