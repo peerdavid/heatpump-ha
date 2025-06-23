@@ -147,7 +147,7 @@ def main():
         finally:
             hp_client.logout()  # try to logout for an ordinary cancellation (if possible)
             hp_client.close_connection()
-            sleep(10)
+            sleep(1)
 
 if __name__ == "__main__":
     main()
