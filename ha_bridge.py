@@ -102,18 +102,24 @@ def set_pv(hp_client: HtHeatpump):
     if pv_modus < 0:
         print("NO PV Modus received yet.")
         return
+
+    if pv_modus != 0 and pv_modus != 1:
+        print("PV Modus must be 0 or 1.")
+        return
     
     if pv_ww < 0:
         print("NO PV WW received yet.")
         return
     
-    print("Set PV modus to", pv_modus)
-    print("Set PV WW to", pv_ww)
-    # print("Set 2. Stufe WW Betriebs to", value)
-    # hp_client.set_param("2. Stufe WW Betriebs", value, True)
-
+    if pv_ww < 0 or pv_ww > 60:
+        print("PV WW must be between 0 and 60.")
+        return
     
+    print("Set PV modus to", pv_modus)
+    hp_client.set_param("2. Stufe WW Betriebs", pv_modus, True)
 
+    print("Set PV WW to", pv_ww)
+    hp_client.set_param("WW Normaltemp.", pv_ww, True)
 
 #
 # M A I N
@@ -137,7 +143,7 @@ def main():
         finally:
             hp_client.logout()  # try to logout for an ordinary cancellation (if possible)
             hp_client.close_connection()
-            sleep(1)
+            sleep(60)
 
 if __name__ == "__main__":
     main()
