@@ -127,7 +127,7 @@ def set_pv(hp_client: HtHeatpump):
 def main():
     print("Starting heatpump HA bridge... wait until rebooted.")
     sys.stdout.flush()
-    sleep(120) # Wait for reboot
+    sleep(10) # Wait for reboot
     print("Reboot done.")
     sys.stdout.flush()
     sensors = get_all_sensors(current_path)
