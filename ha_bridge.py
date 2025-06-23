@@ -36,23 +36,17 @@ def create_mqtt_client() -> mqtt.Client:
     return mqtt_client
 
 
-def sync_hp_to_mqtt(hp: HtHeatpump, mqtt_client: mqtt.Client, sensors):
-    try:
-        hp.open_connection()
-        hp.login()
-        for ht_id, mqtt_id in sensors:
-            try:
-                value = hp.get_param(ht_id)
-                print(f"{mqtt_id} = {value}.")
-            except:
-                print(f"Could not read {ht_id}")
+def sync_hp_to_mqtt(hp: HtHeatpump, mqtt_client: mqtt.Client, sensors):    
+    for ht_id, mqtt_id in sensors:
+        try:
+            value = hp.get_param(ht_id)
+            print(f"{mqtt_id} = {value}.")
+        except:
+            print(f"Could not read {ht_id}")
 
-            mqtt_id = f"home/heatpump/{mqtt_id}"
-            mqtt_client.publish(mqtt_id, value)
+        mqtt_id = f"home/heatpump/{mqtt_id}"
+        mqtt_client.publish(mqtt_id, value)
 
-    finally:
-        hp.logout()  # try to logout for an ordinary cancellation (if possible)
-        hp.close_connection()
 
 
 def get_all_sensors(path):
@@ -84,12 +78,18 @@ def main():
 
     while(True):
         try:
+            hp_client.open_connection()
+            hp_client.login()
+
             # sync_hp_to_mqtt(hp_client, mqtt_client, sensors)
             set_electro_heat(hp_client, mqtt_client)
             sleep(60)
         except Exception as e:
             print(f"Failed to sync heatpump with MQTT: {e}")
             sleep(60)
+        finally:
+            hp_client.logout()  # try to logout for an ordinary cancellation (if possible)
+            hp_client.close_connection()
 
 if __name__ == "__main__":
     main()
