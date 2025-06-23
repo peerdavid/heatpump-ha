@@ -66,39 +66,30 @@ def get_all_sensors(path):
     return sensors
 
 
-def subscribe_ww(mqtt_client: mqtt.Client):
-    # Set the callback for incoming messages
-    mqtt_id = "home/heatpump/pv/ww"
-    mqtt_client.subscribe(mqtt_id)
+def subscribe_topics(mqtt_client: mqtt.Client):
+    # Subscribe to both topics
+    mqtt_client.subscribe("home/heatpump/pv/ww")
+    mqtt_client.subscribe("home/heatpump/pv/modus")
 
     def on_message(client, userdata, message):
-        global pv_ww
+        global pv_ww, pv_modus
         try:
             # Decode the message payload
             value = message.payload.decode('utf-8')
-            pv_ww = int(value)
-            print(f"Received message on {message.topic}: {pv_ww}")
+            if message.topic == "home/heatpump/pv/ww":
+                pv_ww = int(value)
+                print(f"Received message on {message.topic}: pv_ww = {pv_ww}")
+            elif message.topic == "home/heatpump/pv/modus":
+                pv_modus = int(value)
+                print(f"Received message on {message.topic}: pv_modus = {pv_modus}")
+        except ValueError:
+            print(f"Invalid value received on {message.topic}: {message.payload.decode('utf-8')}")
         except Exception as e:
-            print(f"Error processing message: {e}")
+            print(f"Error processing message on {message.topic}: {e}")
 
-    mqtt_client.on_message = on_message
-
-def subscribe_pv_modus(mqtt_client: mqtt.Client):
     # Set the callback for incoming messages
-    mqtt_id = "home/heatpump/pv/modus"
-    mqtt_client.subscribe(mqtt_id)
-
-    def on_message(client, userdata, message):
-        global pv_modus
-        try:
-            # Decode the message payload
-            value = message.payload.decode('utf-8')
-            pv_modus = int(value)
-            print(f"Received message on {message.topic}: {pv_modus}")
-        except Exception as e:
-            print(f"Error processing message: {e}")
-
     mqtt_client.on_message = on_message
+
 
 def set_pv(hp_client: HtHeatpump):
     global pv_modus
@@ -132,8 +123,7 @@ def main():
     sensors = get_all_sensors(current_path)
     hp_client = create_heatpump_client()
     mqtt_client = create_mqtt_client()
-    subscribe_pv_modus(mqtt_client)
-    subscribe_ww(mqtt_client)
+    subscribe_topics(mqtt_client)
 
     while(True):
         try:
