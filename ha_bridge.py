@@ -1,3 +1,4 @@
+import sys
 import os
 import argparse
 from time import sleep
@@ -125,8 +126,10 @@ def set_pv(hp_client: HtHeatpump):
 #
 def main():
     print("Starting heatpump HA bridge... wait until rebooted.")
+    sys.stdout.flush()
     sleep(120) # Wait for reboot
     print("Reboot done.")
+    sys.stdout.flush()
     sensors = get_all_sensors(current_path)
     hp_client = create_heatpump_client()
     mqtt_client = create_mqtt_client()
@@ -148,6 +151,7 @@ def main():
         finally:
             hp_client.logout()  # try to logout for an ordinary cancellation (if possible)
             hp_client.close_connection()
+            sys.stdout.flush()
             sleep(60)
 
 if __name__ == "__main__":
