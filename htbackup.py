@@ -132,7 +132,6 @@ def main():
                         # ... and wait for the response
                         try:
                             resp = hp.read_response()
-                            print(resp)
                             # search for pattern "NAME=...", "VAL=...", "MAX=..." and "MIN=..." inside the answer
                             m = re.match(
                                 r"^{},.*NAME=([^,]+).*VAL=([^,]+).*MAX=([^,]+).*MIN=([^,]+).*$".format(
