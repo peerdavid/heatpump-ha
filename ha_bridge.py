@@ -71,6 +71,7 @@ def get_all_sensors(path):
 
 def set_electro_heat(hp_client: HtHeatpump, mqtt_client: mqtt.Client):
     value = 3
+    print("Set 2. Stufe WW Betriebs to", value)
     hp_client.set_param("2. Stufe WW Betriebs", value, True)
 
 #
@@ -83,7 +84,7 @@ def main():
 
     while(True):
         try:
-            sync_hp_to_mqtt(hp_client, mqtt_client, sensors)
+            # sync_hp_to_mqtt(hp_client, mqtt_client, sensors)
             set_electro_heat(hp_client, mqtt_client)
             sleep(60)
         except Exception as e:
