@@ -1,5 +1,6 @@
 ha_bridge.service
 run.sh
+tmp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

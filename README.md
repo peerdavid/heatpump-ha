@@ -1,9 +1,11 @@
 # heatpump-ha
 Connect a heatpump to home assistant via an MQTT Bus.
 
+# Setup
+Copy the htparams.csv into the `../htheatpump/htheatpump` directory.
+
 # How to run as a service
 
-# Run as service
 Create the following file with `sudo nano /etc/systemd/system/ha_bridge.service`:
 ```
 [Unit]
