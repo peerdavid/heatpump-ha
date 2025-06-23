@@ -134,7 +134,10 @@ def main():
             hp_client.open_connection()
             hp_client.login()
 
-            # sync_hp_to_mqtt(hp_client, mqtt_client, sensors)
+            print("\n\n Send values to MQTT.")
+            sync_hp_to_mqtt(hp_client, mqtt_client, sensors)
+            
+            print("\n\n Set PV values if available.")
             set_pv(hp_client)
         except Exception as e:
             print(f"Failed to sync heatpump with MQTT: {e}")
