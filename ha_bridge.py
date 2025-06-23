@@ -20,7 +20,9 @@ parser.add_argument('--mqtt_user', default="user", help='MQTT user.')
 parser.add_argument('--mqtt_passwd', default="passwd", help='MQTT password.')
 args = parser.parse_args()
 
-current_electro_heat_value = -1
+pv_modus = -1
+pv_ww = -1
+
 
 #
 # Helper
@@ -64,29 +66,52 @@ def get_all_sensors(path):
     return sensors
 
 
-def subscribe_electro_heat(mqtt_client: mqtt.Client):
+def subscribe_ww(mqtt_client: mqtt.Client):
     # Set the callback for incoming messages
-    mqtt_id = "home/heatpump/2_stufe_ww_betriebs"
+    mqtt_id = "home/heatpump/pv/ww"
     mqtt_client.subscribe(mqtt_id)
 
     def on_message(client, userdata, message):
+        global pv_ww
         try:
             # Decode the message payload
             value = message.payload.decode('utf-8')
-            global current_electro_heat_value
-            current_electro_heat_value = int(value)
-            print(f"Received message on {message.topic}: {value}")
+            pv_ww = int(value)
+            print(f"Received message on {message.topic}: {pv_ww}")
         except Exception as e:
             print(f"Error processing message: {e}")
 
     mqtt_client.on_message = on_message
 
-def set_electro_heat(hp_client: HtHeatpump, mqtt_client: mqtt.Client):
+def subscribe_electro_heat(mqtt_client: mqtt.Client):
+    # Set the callback for incoming messages
+    mqtt_id = "home/heatpump/pv/modus"
+    mqtt_client.subscribe(mqtt_id)
+
+    def on_message(client, userdata, message):
+        global pv_modus
+        try:
+            # Decode the message payload
+            value = message.payload.decode('utf-8')
+            pv_modus = int(value)
+            print(f"Received message on {message.topic}: {pv_modus}")
+        except Exception as e:
+            print(f"Error processing message: {e}")
+
+    mqtt_client.on_message = on_message
+
+def set_pv(hp_client: HtHeatpump, mqtt_client: mqtt.Client):
     # Read value with mqtt
-    if current_electro_heat_value < 0:
+    if pv_modus < 0:
+        print("NO PV Modus received yet.")
         return
     
-    print("Setting electro heat to", current_electro_heat_value)
+    if pv_ww < 0:
+        print("NO PV WW received yet.")
+        return
+    
+    print("Set PV modus to", pv_modus)
+    print("Set PV WW to", pv_ww)
     # print("Set 2. Stufe WW Betriebs to", value)
     # hp_client.set_param("2. Stufe WW Betriebs", value, True)
 
@@ -108,7 +133,7 @@ def main():
             hp_client.login()
 
             # sync_hp_to_mqtt(hp_client, mqtt_client, sensors)
-            set_electro_heat(hp_client, mqtt_client)
+            set_pv(hp_client, mqtt_client)
         except Exception as e:
             print(f"Failed to sync heatpump with MQTT: {e}")
         finally:
