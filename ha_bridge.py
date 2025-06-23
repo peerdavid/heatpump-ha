@@ -95,16 +95,13 @@ def set_pv(hp_client: HtHeatpump):
     global pv_modus
     global pv_ww
 
-    print(pv_modus)
-    print(pv_ww)
-
     # Read value with mqtt
     if pv_modus < 0:
         print("NO PV Modus received yet.")
         return
 
-    if pv_modus != 0 and pv_modus != 1:
-        print("PV Modus must be 0 or 1.")
+    if pv_modus != 0 and pv_modus != 3:
+        print("PV Modus must be 0 or 3.")
         return
     
     if pv_ww < 0:
@@ -133,6 +130,7 @@ def main():
 
     while(True):
         try:
+            print("Connecting to heatpump...")
             hp_client.open_connection()
             hp_client.login()
 
