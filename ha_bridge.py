@@ -20,6 +20,7 @@ parser.add_argument('--mqtt_user', default="user", help='MQTT user.')
 parser.add_argument('--mqtt_passwd', default="passwd", help='MQTT password.')
 args = parser.parse_args()
 
+current_electro_heat_value = -1
 
 #
 # Helper
@@ -63,15 +64,29 @@ def get_all_sensors(path):
     return sensors
 
 
+def subscribe_electro_heat(mqtt_client: mqtt.Client):
+    # Set the callback for incoming messages
+    mqtt_id = "home/heatpump/2_stufe_ww_betriebs"
+    mqtt_client.subscribe(mqtt_id)
+
+    def on_message(client, userdata, message):
+        try:
+            # Decode the message payload
+            value = message.payload.decode('utf-8')
+            global current_electro_heat_value
+            current_electro_heat_value = int(value)
+            print(f"Received message on {message.topic}: {value}")
+        except Exception as e:
+            print(f"Error processing message: {e}")
+
+    mqtt_client.on_message = on_message
+
 def set_electro_heat(hp_client: HtHeatpump, mqtt_client: mqtt.Client):
     # Read value with mqtt
-    mqtt_id = "home/heatpump/2_stufe_ww_betriebs"
-    try:
-        value = mqtt_client.subscribe(mqtt_id)
-        print(f"Current value of {mqtt_id} is {value}.")
-    except Exception as e:
-        print(f"Could not read {mqtt_id}: {e}")
-
+    if current_electro_heat_value < 0:
+        return
+    
+    print("Setting electro heat to", current_electro_heat_value)
     # print("Set 2. Stufe WW Betriebs to", value)
     # hp_client.set_param("2. Stufe WW Betriebs", value, True)
 
