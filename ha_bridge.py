@@ -24,6 +24,9 @@ args = parser.parse_args()
 pv_modus = -1
 pv_ww = -1
 
+pv_modus_old = -1
+pv_ww_old = -1
+
 
 #
 # Helper
@@ -97,6 +100,8 @@ def subscribe_topics(mqtt_client: mqtt.Client):
 def set_pv(hp_client: HtHeatpump):
     global pv_modus
     global pv_ww
+    global pv_modus_old
+    global pv_ww_old
 
     # Read value with mqtt
     if pv_modus < 0:
@@ -115,11 +120,20 @@ def set_pv(hp_client: HtHeatpump):
         print("PV WW must be between 0 and 60.")
         return
     
-    print("Set PV modus to", pv_modus)
-    hp_client.set_param("2. Stufe WW Betriebs", pv_modus, True)
+    
+    if pv_modus != pv_modus_old:
+        print("Set PV modus to", pv_modus)
+        hp_client.set_param("2. Stufe WW Betriebs", pv_modus, True)
+        pv_modus_old = pv_modus
+    else:
+        print("PV modus unchanged:", pv_modus)
 
-    print("Set PV WW to", pv_ww)
-    hp_client.set_param("WW Normaltemp.", pv_ww, True)
+    if pv_ww != pv_ww_old:
+        print("Set PV WW to", pv_ww)
+        hp_client.set_param("WW Normaltemp.", pv_ww, True)
+        pv_ww_old = pv_ww
+    else:
+        print("PV WW unchanged:", pv_ww)
 
 #
 # M A I N
@@ -128,7 +142,7 @@ def main():
     print("Starting heatpump HA bridge... wait until rebooted.")
     sys.stdout.flush()
     sleep(10) # Wait for reboot
-    print("Reboot done.")
+    print("Re   boot done.")
     sys.stdout.flush()
     sensors = get_all_sensors(current_path)
     hp_client = create_heatpump_client()
